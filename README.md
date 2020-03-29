@@ -1,12 +1,12 @@
 # px4_drv - Unofficial Linux driver for PLEX PX-W3U4/Q3U4/W3PE4/Q3PE4 ISDB-T/S receivers
 
-PLEX PX-W3U4/Q3U4/W3PE4/Q3PE4用の非公式版Linuxドライバです。  
-PLEX社の[Webサイト](http://plex-net.co.jp)にて配布されている公式Linuxドライバとは**別物**です。
+An unofficial Linux driver for PLEX PX-W3U4 / Q3U4 / W3PE4 / Q3PE4.
+It is ** different ** from the official Linux driver distributed on PLEX's [Website] (http://plex-net.co.jp).
 
-現在開発中につき、環境によっては動作が安定しない可能性があります。  
-予めご了承ください。
+Currently under development, operation may not be stable depending on the environment.
+Please note.
 
-## 対応デバイス
+## corresponding device
 
 - PLEX
 
@@ -17,15 +17,15 @@ PLEX社の[Webサイト](http://plex-net.co.jp)にて配布されている公式
 
 - e-Better
 
-	- DTV02-1T1S-U (実験的)
+	- DTV02-1T1S-U (experimental)
 
-## インストール
+## Install
 
-このドライバを使用する前に、ファームウェアを公式ドライバより抽出しインストールを行う必要があります。
+Before using this driver, you need to extract and install the firmware from the official driver.
 
-### 1. ファームウェアの抽出とインストール
+### 1. Extract and install firmware
 
-unzip, gcc, makeがインストールされている必要があります。
+unzip, gcc, make must be installed.
 
 	$ cd fwtool
 	$ make
@@ -36,99 +36,99 @@ unzip, gcc, makeがインストールされている必要があります。
 	$ sudo cp it930x-firmware.bin /lib/firmware/
 	$ cd ../
 
-### 2. ドライバのインストール
+### 2. Driver installation
 
-一部のLinuxディストリビューションでは、udevのインストールが別途必要になる場合があります。
+Some Linux distributions may require a separate udev installation.
 
-#### DKMSを使用しない場合
+#### When not using DKMS
 
-gcc, make, カーネルソース/ヘッダがインストールされている必要があります。
+gcc, make and kernel source / header must be installed.
 
 	$ cd driver
 	$ make
 	$ sudo make install
 	$ cd ../
 
-#### DKMSを使用する場合
+#### When using DKMS
 
-gcc, make, カーネルソース/ヘッダ, dkmsがインストールされている必要があります。
+gcc, make, kernel source / header, dkms must be installed.
 
 	$ sudo cp -a ./ /usr/src/px4_drv-0.2.1
 	$ sudo dkms add px4_drv/0.2.1
 	$ sudo dkms install px4_drv/0.2.1
 
-### 3. 確認
+### 3. Verification
 
-#### 3.1 カーネルモジュールのロードの確認
+#### 3.1 Confirm kernel module loading
 
-下記のコマンドを実行し、`px4_drv`から始まる行が表示されれば、カーネルモジュールが正常にロードされています。
+Execute the following command, and if the line starting with `px4_drv` is displayed, the kernel module has been successfully loaded.
 
 	$ lsmod | grep -e ^px4_drv
 	px4_drv                81920  0
 
-何も表示されない場合は、下記のコマンドを実行してから、再度上記のコマンドを実行して確認を行ってください。
+If nothing is displayed, execute the following command and then execute the above command again to confirm.
 
 	$ modprobe px4_drv
 
-それでもカーネルモジュールが正常にロードされない場合は、インストールから再度やり直してください。
+If the kernel module still does not load properly, start over from the installation.
 
-#### 3.2 デバイスファイルの確認
+#### 3.2 Checking device files
 
-インストールに成功し、カーネルモジュールがロードされた状態でデバイスが接続されると、`/dev/` 以下に `px4video*` のような名前のデバイスファイルが作成されます。
-下記のようなコマンドで確認できます。
+If the installation is successful and a device is connected with the kernel module loaded, a device file named `px4video *` will be created under `/ dev /`.
+You can check with the following command.
 
 	$ ls /dev/px4video*
 	/dev/px4video0  /dev/px4video1  /dev/px4video2  /dev/px4video3
 
-チューナーは、`px4video0`から ISDB-S, ISDB-S, ISDB-T, ISDB-T というように、SとTが2つずつ交互に割り当てられます。
+The tuner is assigned two S and T alternately from `px4video0`, such as ISDB-S, ISDB-S, ISDB-T, ISDB-T.
 
-## アンインストール
+## Uninstall
 
-### 1. ドライバのアンインストール
+### 1. Uninstall Driver
 
-#### DKMSを使用せずにインストールした場合
+#### When installed without using DKMS
 
 	$ cd driver
 	$ sudo make uninstall
 	$ cd ../
 
-#### DKMSを使用してインストールした場合
+#### When installed using DKMS
 
 	$ sudo dkms remove px4_drv/0.2.1 --all
 	$ sudo rm -rf /usr/src/px4_drv-0.2.1
 
-### 2. ファームウェアのアンインストール
+### 2. Uninstalling firmware
 
 	$ sudo rm /lib/firmware/it930x-firmware.bin
 
-## 受信方法
+## Receiving method
 
-recpt1や[BonDriverProxy_Linux](https://github.com/u-n-k-n-o-w-n/BonDriverProxy_Linux)等の、PTシリーズ用chardevドライバに対応したソフトウェアを使用することで、TSデータの受信を行うことができます。  
-recpt1は、PLEX社より配布されているものを使用する必要はありません。
+TS data can be received by using software that supports the chardev driver for PT series, such as recpt1 and [BonDriverProxy_Linux] (https://github.com/u-n-k-n-o-w-n/BonDriverProxy_Linux).
+recpt1 does not need to use the one distributed by PLEX.
 
-## LNB電源の出力
+## LNB power output
 
-出力なしと15Vの出力のみに対応しています。デフォルトではLNB電源の出力を行いません。  
-LNB電源の出力を行うには、recpt1を実行する際のパラメータに `--lnb 15` を追加してください。
+It supports only no output and 15V output. By default, LNB power is not output.
+To output the LNB power, add `--lnb 15` to the parameter when executing recpt1.
 
-## 備考
+## Remarks
 
-### 内蔵カードリーダーやリモコンについて
+### About the built-in card reader and remote control
 
-このドライバは、各種対応デバイスに内蔵されているカードリーダーやリモコンの操作には対応していません。  
-また、今後対応を行う予定もありません。ご了承ください。
+This driver does not support the operation of the card reader or remote control built into various compatible devices.
+There are no plans to respond in the future. Please note.
 
-### e-Better DTV02-1T1S-Uについて
+### About e-Better DTV02-1T1S-U
 
-e-Better DTV02-1T1S-Uは、個体により正常に動作しないことのある不具合が各所にて多数報告されています。そのため、このドライバでは「実験的な対応」とさせていただいております。  
-上記の不具合はこの非公式ドライバでも完全には解消できないと思われますので、その点は予めご了承ください。
+Many problems have been reported in various places of e-Better DTV02-1T1S-U, which may not operate properly depending on the individual. Therefore, this driver is an "experimental response".
+Please note that the above problems may not be completely resolved by this unofficial driver.
 
-## 技術情報
+## Technical information
 
-### デバイスの構成
+### Device configuration
 
-PX-W3PE4/Q3PE4は、電源の供給をPCIeスロットから受け、データのやり取りをUSBを介して行います。  
-PX-Q3U4/Q3PE4は、PX-W3U4/W3PE4相当のデバイスがUSBハブを介して2つぶら下がる構造となっています。
+The PX-W3PE4 / Q3PE4 receives power from the PCIe slot and exchanges data via USB.
+The PX-Q3U4 / Q3PE4 has a structure in which two PX-W3U4 / W3PE4 equivalent devices hang down via a USB hub.
 
 - PX-W3U4/W3PE4
 
@@ -144,7 +144,7 @@ PX-Q3U4/Q3PE4は、PX-W3U4/W3PE4相当のデバイスがUSBハブを介して2�
 	- Terrestrial Tuner: RafaelMicro R850 (x4)
 	- Satellite Tuner: RafaelMicro RT710 (x4)
 
-DTV02-1T1S-Uは、ISDB-T側のTSシリアル出力をISDB-S側と共有しています。そのため、同時に受信できるチャンネル数は1チャンネルのみです。
+DTV02-1T1S-U shares the TS serial output of ISDB-T with ISDB-S. Therefore, only one channel can be received at a time.
 
 - DTV02-1T1S-U
 
@@ -153,6 +153,6 @@ DTV02-1T1S-Uは、ISDB-T側のTSシリアル出力をISDB-S側と共有してい
 	- Terrestrial Tuner: RafaelMicro R850
 	- Satellite Tuner: RafaelMicro RT710
 
-### TS Aggregation の設定
+### Configure TS Aggregation
 
-sync_byteをデバイス側で書き換え、ホスト側でその値を元にそれぞれのチューナーのTSデータを振り分けるモードを使用しています。
+The mode that rewrites sync_byte on the device side and distributes the TS data of each tuner on the host side based on the value is used.
